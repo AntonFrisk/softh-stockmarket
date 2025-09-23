@@ -57,7 +57,7 @@ def get_companies_summary(df_raw):
     # Sort by change percentage descending
     df_companies = df_companies.sort_values(by="change_percentage", ascending=False)
 
-    display(df_companies)
+    # display(df_companies)  # Commented out for API compatibility
 
     # change percentage to float and latest price to int
     df_companies["change_percentage"] = df_companies["change_percentage"].astype(float)
@@ -89,7 +89,7 @@ def get_winners(df_companies):
 
 def main():
     print("--------------------------------")
-    file_name = "data2"
+    file_name = "data1"
     # read csv file with semicolon as delimiter
     df_raw = parse_csv(file_name)
     display(df_raw.head(10))
