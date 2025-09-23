@@ -3,8 +3,9 @@ from fastapi.responses import JSONResponse
 import pandas as pd
 import json
 import io
-from typing import Dict, Any
+from typing import Dict, Any, List
 import os
+from pydantic import BaseModel
 
 # Import your existing functions
 from main import get_companies_summary, get_winners
@@ -16,7 +17,19 @@ app = FastAPI(
 )
 
 
-def process_dataframe(df_raw: pd.DataFrame) -> Dict[str, Any]:
+# Pydantic models for type-safe responses
+class Winner(BaseModel):
+    rank: int
+    name: str
+    percent: float
+    latest: int
+
+
+class WinnersResponse(BaseModel):
+    winners: List[Winner]
+
+
+def process_dataframe(df_raw: pd.DataFrame) -> WinnersResponse:
     """
     Core processing function that takes a DataFrame and returns winners.
     This function is used by both endpoints to avoid code duplication.
@@ -30,7 +43,7 @@ def process_dataframe(df_raw: pd.DataFrame) -> Dict[str, Any]:
         df_companies = get_companies_summary(df_raw)
         result = get_winners(df_companies)
 
-        return result
+        return WinnersResponse(**result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing data: {str(e)}")
 
@@ -41,7 +54,7 @@ async def root():
 
 
 @app.post("/get_daily_winners_from_file")
-async def get_daily_winners_from_file(file: UploadFile = File(...)) -> Dict[str, Any]:
+async def get_daily_winners_from_file(file: UploadFile = File(...)) -> WinnersResponse:
     """
     Upload a CSV file and get the top 3 daily winners based on price change percentage.
 
@@ -73,7 +86,7 @@ async def get_daily_winners_from_file(file: UploadFile = File(...)) -> Dict[str,
 
 
 @app.get("/get_daily_winners/")
-async def get_daily_winners() -> Dict[str, Any]:
+async def get_daily_winners() -> WinnersResponse:
     """
     Process a CSV file from the local folder and get the top 3 daily winners.
 
