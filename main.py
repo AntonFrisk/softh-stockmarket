@@ -1,57 +1,113 @@
+import json
 import pandas as pd
 from IPython.display import display
 
 
+def parse_csv(file_name):
+    df_raw = pd.read_csv(f"{file_name}.csv", delimiter=";")
+    df_raw["Date"] = pd.to_datetime(df_raw["Date"])
+    df_raw = df_raw.sort_values(by="Date", ascending=True)
+    return df_raw
+
+
+def get_companies_summary(df_raw):
+
+    latest_data = df_raw.groupby("Kod").last().reset_index()
+
+    # Calculate previous day timestamp vectorized
+    latest_data["previous_day_end"] = (
+        pd.to_datetime(latest_data["Date"]) - pd.Timedelta(days=1)
+    ).dt.floor("D") + pd.Timedelta(hours=23, minutes=59)
+
+    # More robust approach: for each company, find previous price
+    def get_previous_price(company_code, prev_timestamp):
+        company_data = df_raw[df_raw["Kod"] == company_code]
+        before_timestamp = company_data[company_data["Date"] < prev_timestamp]
+        if not before_timestamp.empty:
+            return before_timestamp.iloc[-1]["Kurs"], before_timestamp.iloc[-1]["Date"]
+        else:
+            return None, None
+
+    # Apply the function to get previous prices
+    previous_results = latest_data.apply(
+        lambda row: get_previous_price(row["Kod"], row["previous_day_end"]),
+        axis=1,
+        result_type="expand",
+    )
+    previous_results.columns = ["previous_price", "previous_timestamp"]
+
+    # Combine latest and previous data
+    df_companies = pd.concat(
+        [latest_data[["Kod", "Kurs", "Date"]], previous_results], axis=1
+    )
+
+    # Rename columns to match original format
+    df_companies = df_companies.rename(
+        columns={"Kod": "kod", "Kurs": "latest_price", "Date": "latest_timestamp"}
+    )
+
+    # Calculate change percentage
+    df_companies["change_percentage"] = (
+        (df_companies["latest_price"] - df_companies["previous_price"])
+        / df_companies["previous_price"]
+        * 100
+    )
+    df_companies["change_percentage"] = df_companies["change_percentage"].round(2)
+
+    # Sort by change percentage descending
+    df_companies = df_companies.sort_values(by="change_percentage", ascending=False)
+
+    display(df_companies)
+
+    # change percentage to float and latest price to int
+    df_companies["change_percentage"] = df_companies["change_percentage"].astype(float)
+    df_companies["latest_price"] = df_companies["latest_price"].astype(int)
+
+    return df_companies
+
+
+def get_winners(df_companies):
+    winners = []
+    number_of_winners = 3
+    for i in range(number_of_winners):
+        dict_winner = {
+            "rank": i + 1,
+            "name": str(df_companies.iloc[i]["kod"]),
+            "percent": float(
+                df_companies.iloc[i]["change_percentage"]
+            ),  # Now Python float
+            "latest": int(df_companies.iloc[i]["latest_price"]),  # Now Python int
+        }
+        winners.append(dict_winner)
+
+    output_dict = {
+        "winners": winners,
+    }
+
+    return output_dict
+
+
 def main():
     print("--------------------------------")
+    file_name = "data2"
     # read csv file with semicolon as delimiter
-    df = pd.read_csv("data1.csv", delimiter=";")
-
-    # convert Date to datetime
-    df["Date"] = pd.to_datetime(df["Date"])
-    # sort by date descending
-    df = df.sort_values(by="Date", ascending=True)
-    display(df.head(10))
+    df_raw = parse_csv(file_name)
+    display(df_raw.head(10))
 
     # get list of unique companies
-    companies = df["Kod"].unique()
-    print(companies)
+    # companies = df_raw["Kod"].unique()
+    # print(f"Companies: {companies}")
 
-    # for each company, get the last price and the date and save to a new df
-    latest_prices = []
-    latest_timestamps = []
-    previous_prices = []
-    previous_timestamps = []
-    for company in companies:
-        latest_price = df[df["Kod"] == company]["Kurs"].iloc[-1]
-        latest_timestamp = df[df["Kod"] == company]["Date"].iloc[-1]
-        # get the 23:59 time for the day before latest_date
-        previous_day_timestamp = pd.to_datetime(latest_timestamp) - pd.Timedelta(days=1)
-        previous_day_timestamp = previous_day_timestamp.replace(
-            hour=23, minute=59, second=0, microsecond=0
-        )
-        # get previous day price by finding firs occurence of date before last_date
-        previous_price = df[df["Kod"] == company][df["Date"] < previous_day_timestamp][
-            "Kurs"
-        ].iloc[-1]
-        previous_timestamp = df[df["Kod"] == company][
-            df["Date"] < previous_day_timestamp
-        ]["Date"].iloc[-1]
-        print(f"{company}: {latest_price} on {latest_timestamp}")
-        latest_prices.append(latest_price)
-        latest_timestamps.append(latest_timestamp)
-        previous_prices.append(previous_price)
-        previous_timestamps.append(previous_timestamp)
-    df_last_prices = pd.DataFrame(
-        {
-            "kod": companies,
-            "last_price": latest_prices,
-            "date": latest_timestamps,
-            "previous_price": previous_prices,
-            "previous_date": previous_timestamps,
-        }
-    )
-    display(df_last_prices.head())
+    # Get latest data for each company
+    df_companies = get_companies_summary(df_raw)
+
+    # get winners
+    output_dict = get_winners(df_companies)
+    print(f"Winners: {output_dict}")
+
+    # save to json
+    with open(f"winners_{file_name}.json", "w") as f:
+        json.dump(output_dict, f, indent=4)
 
 
 if __name__ == "__main__":
