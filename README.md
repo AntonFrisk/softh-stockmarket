@@ -9,6 +9,7 @@ Demo of the REST API built with FastAPI:
 2. Run `demo_api.py` in another terminal to test the two api endpoints.
 
 API endpoints:
-- 
+- /get_daily_winners/ -- getting top 3 daily winners from the locally stored CSV. CSV loaded fresh for every call
+- /get_daily_winners_from_file -- getting top 3 daily winners from a CSV file upload.
 
 

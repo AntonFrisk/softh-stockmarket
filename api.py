@@ -12,7 +12,15 @@ from validation import WinnersResponse, validate_csv_structure
 
 app = FastAPI(
     title="Stock Market Daily Winners API",
-    description="API to analyze stock market data and find daily winners",
+    description="""
+    API to analyze stock market data and find daily winners
+    
+    ### Features:
+    - Process local CSV file of stock prices
+    - Upload CSV files for analysis
+    - Get top 3 daily winners with percentage changes
+    
+    """,
     version="1.0.0",
 )
 
@@ -20,7 +28,7 @@ app = FastAPI(
 def process_dataframe(df_raw: pd.DataFrame) -> WinnersResponse:
     """
     Core processing function that takes a DataFrame and returns winners.
-    This function is used by both endpoints to avoid code duplication.
+    This function is used by both endpoints to go from csv input to a winners list in JSON format.
     """
     try:
         # Convert Date to datetime and sort
@@ -41,15 +49,40 @@ async def root():
     return {"message": "Stock Market Daily Winners API"}
 
 
-@app.post("/get_daily_winners_from_file")
+@app.get(
+    "/health",
+    tags=["Health"],
+    summary="Basic Health Check",
+    description="Returns basic API health status",
+)
+async def health_check():
+    """Basic health check endpoint."""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "service": "Stock Market Daily Winners API",
+        "version": "1.0.0",
+    }
+
+
+@app.post(
+    "/get_daily_winners_from_file",
+    tags=["Upload"],
+    summary="Upload a CSV file and get the top 3 daily winners based on price change percentage.",
+)
 async def get_daily_winners_from_file(file: UploadFile = File(...)) -> WinnersResponse:
     """
     Upload a CSV file and get the top 3 daily winners based on price change percentage.
 
     Expected CSV format:
-    - Columns: Date, Kod (company code), Kurs (price)
+    - Columns:
+       - Date (datetime. )
+       - Kod (string. Company code)
+       - Kurs (int. Price of the stock)
     - Delimiter: semicolon (;)
     - Date format: YYYY-MM-DD HH:MM:SS
+
+    CSV format is validated before analysis.
     """
 
     # Validate file type
@@ -81,13 +114,16 @@ async def get_daily_winners_from_file(file: UploadFile = File(...)) -> WinnersRe
         )
 
 
-@app.get("/get_daily_winners/")
+@app.get(
+    "/get_daily_winners",
+    tags=["Local"],
+    summary="Process a CSV file from the local folder and get the top 3 daily winners.",
+)
 async def get_daily_winners() -> WinnersResponse:
     """
     Process a CSV file from the local folder and get the top 3 daily winners.
+    The file 'data1.csv' is used and reloaded on every call to stay up to date.
 
-    Args:
-        filename: Name of the CSV file in the local folder (with or without .csv extension)
     """
 
     try:
