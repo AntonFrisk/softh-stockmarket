@@ -1,22 +1,22 @@
 {
-    "winners": [
-        {
-            "rank": 1,
-            "name": "AddLife B",
-            "percent": 40.74,
-            "latest": 38
-        },
-        {
-            "rank": 2,
-            "name": "NCC",
-            "percent": 1.68,
-            "latest": 121
-        },
-        {
-            "rank": 3,
-            "name": "ABB",
-            "percent": 1.37,
-            "latest": 222
-        }
-    ]
+  "winners": [
+    {
+      "rank": 1,
+      "name": "AddLife B",
+      "percent": 40.74,
+      "latest": 38
+    },
+    {
+      "rank": 2,
+      "name": "NCC",
+      "percent": 1.68,
+      "latest": 121
+    },
+    {
+      "rank": 3,
+      "name": "ABB",
+      "percent": 1.37,
+      "latest": 222
+    }
+  ]
 }

@@ -3,8 +3,8 @@ import pandas as pd
 from IPython.display import display
 
 
-def parse_csv(file_name):
-    df_raw = pd.read_csv(f"{file_name}.csv", delimiter=";")
+def parse_csv(file_path):
+    df_raw = pd.read_csv(file_path, delimiter=";")
     df_raw["Date"] = pd.to_datetime(df_raw["Date"])
     df_raw = df_raw.sort_values(by="Date", ascending=True)
     return df_raw
@@ -88,10 +88,14 @@ def get_winners(df_companies):
 
 
 def main():
+    """
+    Demo the data pipeline for stock market daily ranking.
+    """
     print("--------------------------------")
     file_name = "data1"
+    file_path = f"data/{file_name}.csv"
     # read csv file with semicolon as delimiter
-    df_raw = parse_csv(file_name)
+    df_raw = parse_csv(file_path)
     display(df_raw.head(10))
 
     # get list of unique companies
@@ -103,11 +107,12 @@ def main():
 
     # get winners
     output_dict = get_winners(df_companies)
-    print(f"Winners: {output_dict}")
+    output_json = json.dumps(output_dict, indent=2)
+    print("\nResponse:\n", output_json)
 
     # save to json
     with open(f"winners_{file_name}.json", "w") as f:
-        json.dump(output_dict, f, indent=4)
+        json.dump(output_dict, f, indent=2)
 
 
 if __name__ == "__main__":
