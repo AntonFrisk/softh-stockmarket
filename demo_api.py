@@ -32,7 +32,7 @@ def test_file_upload_endpoint():
                 "http://localhost:8000/get_daily_winners_from_file", files=files
             )
 
-        print("🆙 File upload endpoint test:")
+        print(f"🆙 File upload endpoint test, using file: {file_path}")
         print(f"Status: {response.status_code}")
         if response.status_code == 200:
             print("Response:\n", json.dumps(response.json(), indent=2))

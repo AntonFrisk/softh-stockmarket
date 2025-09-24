@@ -1,10 +1,35 @@
 import json
 import pandas as pd
 from IPython.display import display
+import shutil
+import tempfile
+import os
+
+
+def read_csv_safely(file_path):
+    """
+    Safely read CSV by creating a temporary copy first.
+    Prevents conflicts with concurrent writes.
+    """
+    with tempfile.NamedTemporaryFile(
+        mode="w+", suffix=".csv", delete=False
+    ) as temp_file:
+        temp_path = temp_file.name
+
+    try:
+        # Copy original file to temp location
+        shutil.copy2(file_path, temp_path)
+        # Read from the copy
+        df = pd.read_csv(temp_path, delimiter=";")
+        return df
+    finally:
+        # Always clean up temp file
+        if os.path.exists(temp_path):
+            os.unlink(temp_path)
 
 
 def parse_csv(file_path):
-    df_raw = pd.read_csv(file_path, delimiter=";")
+    df_raw = read_csv_safely(file_path)
     df_raw["Date"] = pd.to_datetime(df_raw["Date"])
     df_raw = df_raw.sort_values(by="Date", ascending=True)
     return df_raw

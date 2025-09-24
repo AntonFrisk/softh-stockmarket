@@ -7,7 +7,7 @@ from typing import Dict, Any, List
 import os
 
 # Import your existing functions
-from main import get_companies_summary, get_winners
+from main import get_companies_summary, get_winners, read_csv_safely
 from validation import WinnersResponse, validate_csv_structure
 
 app = FastAPI(
@@ -137,8 +137,8 @@ async def get_daily_winners() -> WinnersResponse:
         if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail=f"File '{file_path}' not found")
 
-        # Read the local CSV file
-        df_raw = pd.read_csv(file_path, delimiter=";")
+        # Read the local CSV file safely
+        df_raw = read_csv_safely(file_path)
 
         # Use the core processing function
         return process_dataframe(df_raw)
