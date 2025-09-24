@@ -10,7 +10,7 @@ def test_local_file_endpoint():
     """Test the local file endpoint"""
     try:
         response = requests.get("http://localhost:8000/get_daily_winners/")
-        print("Local file endpoint test:")
+        print("🏠 Local file endpoint test:")
         print(f"Status: {response.status_code}")
         if response.status_code == 200:
             print("Response:\n", json.dumps(response.json(), indent=2))
@@ -24,13 +24,15 @@ def test_local_file_endpoint():
 def test_file_upload_endpoint():
     """Test the file upload endpoint"""
     try:
-        with open("data2.csv", "rb") as f:
+        file_name = "data2.csv"
+        file_path = f"data/{file_name}"
+        with open(file_path, "rb") as f:
             files = {"file": f}
             response = requests.post(
                 "http://localhost:8000/get_daily_winners_from_file", files=files
             )
 
-        print("File upload endpoint test:")
+        print("🆙 File upload endpoint test:")
         print(f"Status: {response.status_code}")
         if response.status_code == 200:
             print("Response:\n", json.dumps(response.json(), indent=2))

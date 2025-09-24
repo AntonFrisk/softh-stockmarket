@@ -5,28 +5,16 @@ import json
 import io
 from typing import Dict, Any, List
 import os
-from pydantic import BaseModel
 
 # Import your existing functions
 from main import get_companies_summary, get_winners
+from validation import WinnersResponse, validate_csv_structure
 
 app = FastAPI(
     title="Stock Market Daily Winners API",
     description="API to analyze stock market data and find daily winners",
     version="1.0.0",
 )
-
-
-# Pydantic models for type-safe responses
-class Winner(BaseModel):
-    rank: int
-    name: str
-    percent: float
-    latest: int
-
-
-class WinnersResponse(BaseModel):
-    winners: List[Winner]
 
 
 def process_dataframe(df_raw: pd.DataFrame) -> WinnersResponse:
@@ -74,6 +62,14 @@ async def get_daily_winners_from_file(file: UploadFile = File(...)) -> WinnersRe
 
         # Convert bytes to string and then to pandas DataFrame
         csv_string = content.decode("utf-8")
+
+        # Read CSV with all columns as strings initially for validation
+        df_raw = pd.read_csv(io.StringIO(csv_string), delimiter=";", dtype=str)
+
+        # Validate CSV structure and content
+        validate_csv_structure(df_raw)
+
+        # Now read again with proper dtypes for processing
         df_raw = pd.read_csv(io.StringIO(csv_string), delimiter=";")
 
         # Use the core processing function
@@ -96,22 +92,23 @@ async def get_daily_winners() -> WinnersResponse:
 
     try:
         filename = "data1.csv"
+        file_path = f"data/{filename}"
         # Add .csv extension if not present
-        if not filename.endswith(".csv"):
-            filename = f"{filename}.csv"
+        if not file_path.endswith(".csv"):
+            file_path = f"{file_path}.csv"
 
         # Check if file exists
-        if not os.path.exists(filename):
-            raise HTTPException(status_code=404, detail=f"File '{filename}' not found")
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail=f"File '{file_path}' not found")
 
         # Read the local CSV file
-        df_raw = pd.read_csv(filename, delimiter=";")
+        df_raw = pd.read_csv(file_path, delimiter=";")
 
         # Use the core processing function
         return process_dataframe(df_raw)
 
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"File '{filename}' not found")
+        raise HTTPException(status_code=404, detail=f"File '{file_path}' not found")
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error processing local file: {str(e)}"
