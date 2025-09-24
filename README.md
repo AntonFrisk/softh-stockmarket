@@ -16,6 +16,7 @@ API endpoints:
 🌐 Demo of the REST API deployed as a Vercel function:
 1. Run `demo_api.py` in the terminal. set `RUN_LOCAL = False` to avoid local setup. The
 API is depolyed at `https://stockmarket-demo.vercel.app/`
+See `https://stockmarket-demo.vercel.app/docs` for more information
 
 
 Notes:

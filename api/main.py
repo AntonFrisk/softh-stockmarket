@@ -59,7 +59,9 @@ def process_dataframe(df_raw: pd.DataFrame) -> WinnersResponse:
 
 @app.get("/")
 async def root():
-    return {"message": "Stock Market Daily Winners API"}
+    return {
+        "message": "Stock Market Daily Winners API. Visit /docs for more information"
+    }
 
 
 @app.get(
