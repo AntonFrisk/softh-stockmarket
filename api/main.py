@@ -14,9 +14,10 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
-# Add project root to sys.path to allow absolute imports
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
+# Add the api directory to sys.path to allow absolute imports
+API_DIR = os.path.dirname(os.path.abspath(__file__))
+if API_DIR not in sys.path:
+    sys.path.insert(0, API_DIR)
 
 # Import your existing functions using absolute imports
 from pipe import get_companies_summary, get_winners, read_csv_safely

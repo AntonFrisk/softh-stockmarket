@@ -51,7 +51,7 @@ def test_deployed_api_health():
     response = requests.get(api_url_health)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
-        print(f"✅ Online API available and health, at {api_url}")
+        print(f"✅ Online API available at: {api_url}")
     else:
         print(f"❌ Online API unavailable")
     print("-" * 50)
