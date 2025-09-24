@@ -52,6 +52,13 @@ def test_deployed_api_health():
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
         print(f"✅ Online API available at: {api_url}")
+        api_url_winners = api_url + "get_daily_winners"
+        response = requests.get(api_url_winners)
+        print(f"Status: {response.status_code}")
+        if response.status_code == 200:
+            print("Response:\n", json.dumps(response.json(), indent=2))
+        else:
+            print("Error:", response.text)
     else:
         print(f"❌ Online API unavailable")
     print("-" * 50)

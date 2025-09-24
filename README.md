@@ -13,6 +13,12 @@ API endpoints:
 - /get_daily_winners_from_file -- getting top 3 daily winners from a CSV file upload.
 
 
-🌐 Demo of the REST API depolyed as a Vercel function:
-1. Run `demo_api.py` in terminal. set `RUN_LOCAL = False` to avoid local setup
-Api depolyed at `https://stockmarket-demo.vercel.app/`
+🌐 Demo of the REST API deployed as a Vercel function:
+1. Run `demo_api.py` in the terminal. set `RUN_LOCAL = False` to avoid local setup. The
+API is depolyed at `https://stockmarket-demo.vercel.app/`
+
+
+Notes:
+- Safe reading of CSV is used. The CSV `data1.csv` may be edited at any time
+- Original template JSON in `winners_data1_template.json` has been modified, since the PDF had some wrong brackets
+- 
