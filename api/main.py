@@ -7,9 +7,10 @@ from typing import Dict, Any, List
 import os
 from datetime import datetime, timezone
 
+
 # Import your existing functions
-from pipe import get_companies_summary, get_winners, read_csv_safely
-from validation import WinnersResponse, validate_csv_structure
+from .pipe import get_companies_summary, get_winners, read_csv_safely
+from .validation import WinnersResponse, validate_csv_structure
 
 # Resolve absolute path to the project root and data directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

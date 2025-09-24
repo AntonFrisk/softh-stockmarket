@@ -59,6 +59,11 @@ def test_deployed_api_health():
 
 if __name__ == "__main__":
     print("Testing API endpoints...")
-    test_local_file_endpoint()
-    test_file_upload_endpoint()
-    test_deployed_api_health()
+    RUN_LOCAL = True
+    RUN_ONLINE = True
+    if RUN_LOCAL:
+        test_local_file_endpoint()
+        test_file_upload_endpoint()
+    if RUN_ONLINE:
+        test_deployed_api_health()
+    print("_" * 50)
