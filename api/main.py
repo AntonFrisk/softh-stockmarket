@@ -5,10 +5,15 @@ import json
 import io
 from typing import Dict, Any, List
 import os
+from datetime import datetime, timezone
 
 # Import your existing functions
-from main import get_companies_summary, get_winners, read_csv_safely
+from pipe import get_companies_summary, get_winners, read_csv_safely
 from validation import WinnersResponse, validate_csv_structure
+
+# Resolve absolute path to the project root and data directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
 app = FastAPI(
     title="Stock Market Daily Winners API",
@@ -59,7 +64,7 @@ async def health_check():
     """Basic health check endpoint."""
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "service": "Stock Market Daily Winners API",
         "version": "1.0.0",
     }
@@ -128,7 +133,7 @@ async def get_daily_winners() -> WinnersResponse:
 
     try:
         filename = "data1.csv"
-        file_path = f"data/{filename}"
+        file_path = os.path.join(DATA_DIR, filename)
         # Add .csv extension if not present
         if not file_path.endswith(".csv"):
             file_path = f"{file_path}.csv"

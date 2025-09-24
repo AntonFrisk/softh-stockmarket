@@ -13,3 +13,5 @@ API endpoints:
 - /get_daily_winners_from_file -- getting top 3 daily winners from a CSV file upload.
 
 
+🌐 Demo of the REST API depolyed as a Vercel function:
+1. 

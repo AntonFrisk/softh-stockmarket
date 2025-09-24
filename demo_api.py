@@ -45,7 +45,20 @@ def test_file_upload_endpoint():
         print("data1.csv file not found")
 
 
+def test_deployed_api_health():
+    api_url = "http://localhost:8000/"
+    api_url += "health"
+    response = requests.get(api_url)
+    print(f"Status: {response.status_code}")
+    if response.status_code == 200:
+        print(f"✅ Online API available and health")
+    else:
+        print(f"❌ Online API unavailable")
+    print("-" * 50)
+
+
 if __name__ == "__main__":
     print("Testing API endpoints...")
     test_local_file_endpoint()
     test_file_upload_endpoint()
+    test_deployed_api_health()
