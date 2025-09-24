@@ -15,4 +15,4 @@ API endpoints:
 
 🌐 Demo of the REST API depolyed as a Vercel function:
 1. Run `demo_api.py` in terminal. set `RUN_LOCAL = False` to avoid local setup
-Api depolyed at 
+Api depolyed at `https://stockmarket-demo.vercel.app/`

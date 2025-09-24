@@ -46,12 +46,12 @@ def test_file_upload_endpoint():
 
 
 def test_deployed_api_health():
-    api_url = "http://localhost:8000/"
-    api_url += "health"
-    response = requests.get(api_url)
+    api_url = "https://stockmarket-demo.vercel.app/"
+    api_url_health = api_url + "health"
+    response = requests.get(api_url_health)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
-        print(f"✅ Online API available and health")
+        print(f"✅ Online API available and health, at {api_url}")
     else:
         print(f"❌ Online API unavailable")
     print("-" * 50)
