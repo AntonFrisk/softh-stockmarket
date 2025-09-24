@@ -1,7 +1,7 @@
 # softh-stockmarket
-data pipeline for stock market daily ranking
+Data pipeline for getting the winners on todays stock market
 
-Demo of the logic:
+⚙️ Demo of the logic:
 - Run `pipe.py` for simple testing of core functions in the data handling. 
 
 🏠 Demo of the REST API locally.
