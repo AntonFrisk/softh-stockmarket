@@ -155,6 +155,9 @@ async def get_daily_winners() -> WinnersResponse:
         # Read the local CSV file safely
         df_raw = read_csv_safely(file_path)
 
+        # Validate CSV structure and content
+        validate_csv_structure(df_raw)
+
         # Use the core processing function
         return process_dataframe(df_raw)
 
