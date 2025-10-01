@@ -117,8 +117,11 @@ def main():
     Demo the data pipeline for stock market daily ranking.
     """
     print("--------------------------------")
+    # Resolve absolute path to the project root and data directory
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    DATA_DIR = os.path.join(BASE_DIR, "data")
     file_name = "data1"
-    file_path = f"data/{file_name}.csv"
+    file_path = f"{DATA_DIR}/{file_name}.csv"
     # read csv file with semicolon as delimiter
     df_raw = parse_csv(file_path)
     display(df_raw.head(10))
