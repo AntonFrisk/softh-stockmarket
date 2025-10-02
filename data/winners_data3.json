@@ -1,0 +1,22 @@
+{
+    "winners": [
+        {
+            "rank": 1,
+            "name": "VOLV B",
+            "percent": 86.44,
+            "latest": 220
+        },
+        {
+            "rank": 2,
+            "name": "AddLife B",
+            "percent": 2.86,
+            "latest": 36
+        },
+        {
+            "rank": 3,
+            "name": "SKF B",
+            "percent": 1.38,
+            "latest": 147
+        }
+    ]
+}
