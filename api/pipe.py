@@ -79,6 +79,16 @@ def get_companies_summary(df_raw):
     )
     df_companies["change_percentage"] = df_companies["change_percentage"].round(2)
 
+    # filter on latest_timestamp to only include rows where latest_timestamp is within the same day as the most recent row
+    most_recent_date = df_companies["latest_timestamp"].max()
+    most_recent_day = most_recent_date.date()
+    start = pd.Timestamp(most_recent_day)  # e.g., 2025-10-02 00:00:00
+    end = start + pd.Timedelta(days=1)  # 2025-10-03 00:00:00
+    df_companies = df_companies[
+        (df_companies["latest_timestamp"] >= start)
+        & (df_companies["latest_timestamp"] < end)
+    ]
+
     # Sort by change percentage descending
     df_companies = df_companies.sort_values(by="change_percentage", ascending=False)
 
@@ -117,8 +127,11 @@ def main():
     Demo the data pipeline for stock market daily ranking.
     """
     print("--------------------------------")
-    file_name = "data1"
-    file_path = f"data/{file_name}.csv"
+    # Resolve absolute path to the project root and data directory
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    DATA_DIR = os.path.join(BASE_DIR, "data")
+    file_name = "data4"
+    file_path = f"{DATA_DIR}/{file_name}.csv"
     # read csv file with semicolon as delimiter
     df_raw = parse_csv(file_path)
     display(df_raw.head(10))
@@ -135,9 +148,10 @@ def main():
     output_json = json.dumps(output_dict, indent=2)
     print("\nResponse:\n", output_json)
 
-    # save to json
-    with open(f"winners_{file_name}.json", "w") as f:
-        json.dump(output_dict, f, indent=2)
+    # save to json to data folder (uncomment this to save json file)
+    # with open(f"{DATA_DIR}/winners_{file_name}.json", "w") as f:
+    #     json.dump(output_dict, f, indent=4)
+    #     print(f"📂 Saved 'winners_{file_name}.json' to {DATA_DIR}")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, ConfigDict
 from typing import Dict, Any, List
 import pandas as pd
 from fastapi import HTTPException
@@ -18,13 +18,11 @@ class WinnersResponse(BaseModel):
 
 # Pydantic model for CSV row validation
 class StockDataRow(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     Date: str  # Will be converted to datetime later
     Kod: str  # Company code
     Kurs: float  # Stock price
-
-    class Config:
-        # Allow extra fields in case CSV has additional columns
-        extra = "allow"
 
 
 def validate_csv_structure(df: pd.DataFrame, rows_to_check: int = None) -> None:

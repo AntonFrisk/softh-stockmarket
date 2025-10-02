@@ -24,7 +24,7 @@ def test_local_file_endpoint():
 def test_file_upload_endpoint():
     """Test the file upload endpoint"""
     try:
-        file_name = "data2.csv"
+        file_name = "data4.csv"
         file_path = f"data/{file_name}"
         with open(file_path, "rb") as f:
             files = {"file": f}
